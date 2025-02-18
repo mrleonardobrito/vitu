@@ -19,7 +19,7 @@ function CameraReset() {
   }
   
 export default function AppCanvas() {
-    const { eyeOpened, walls, isDrawing } = useStore();
+    const { eyeOpened, isDrawing } = useStore();
     
     return (
         <Canvas camera={{ position: [0, 12, 0] }} style={{ opacity: "40%" }}>
@@ -31,8 +31,8 @@ export default function AppCanvas() {
                 infiniteGrid={true}    
                 rotation={[0, 0, 0]} 
             />
-            {isDrawing && <DrawMode/>}
-            {!eyeOpened ? <MapControls maxDistance={32}/> : <OrbitControls />}
+            <DrawMode/>
+            {!eyeOpened ? <MapControls enabled={!isDrawing} maxDistance={32}/> : <OrbitControls enabled={!isDrawing}/>}
         </Canvas>
     )
 }

@@ -1,46 +1,54 @@
 import { Box, Plane } from "@react-three/drei"
-import { ThreeEvent } from "@react-three/fiber"
+import { ThreeEvent, useFrame, useThree } from "@react-three/fiber"
 import * as THREE from "three"
 import { useStore } from "../store/useStore";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Wall from "./Wall";
-
+import type { Wall as WallType } from "./Wall";
 interface BoxProps {
     position: THREE.Vector3;
     mouse: THREE.Vector3;
 }
 
-const DraggableBox: React.FC<BoxProps> = ({ position, mouse }) => {
-    const mesh = useRef<THREE.Mesh>(null!);
-
-    return (
-        <Box
-            ref={mesh}
-            position={position}
-            args={[position.x, position.y, 4]}
-        />
-    );
-};
-
 export default function DrawMode() {
-    const [boxes, setBoxes] = useState<THREE.Vector3[]>([]);
-    const mouse = new THREE.Vector3();
+    const { isDrawing, setDrawing } = useStore()
+    const [previewWall, setPreviewWall] = useState<WallType>()
+    
+    function handlePointerMove(e: ThreeEvent<PointerEvent>) {
+        if (!isDrawing || !previewWall) return;
+        const { point } = e.intersections[0];
+        setPreviewWall({
+            ...previewWall,
+            end: new THREE.Vector3(point.x, previewWall.start.y, point.z)
+        });
+    }
 
     function handlePointerDown(e: ThreeEvent<PointerEvent>) {
-        e.stopPropagation();
+        console.log("Click Start");
+        setDrawing(true);
+
         const { point } = e.intersections[0];
-        setBoxes([...boxes, point]);
+
+        setPreviewWall({
+            start: new THREE.Vector3(point.x, 1.5, point.z),
+            height: 3,
+            end: new THREE.Vector3(point.x, 1.5, point.z)
+        });
+    }
+
+    function handlePointerUp(e: ThreeEvent<PointerEvent>) {
+        setDrawing(false)
     }
 
     return <Plane
+        onPointerMove={handlePointerMove}
         onPointerDown={handlePointerDown}
+        onPointerUp={handlePointerUp}
         args={[100, 100]}
         position={[0, 0, 0]}
         rotation={[-Math.PI / 2, 0, 0]}
-        material={new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.2 })}
+        material={new THREE.MeshBasicMaterial({ transparent: true, opacity: 0 })}
     >
-        {boxes.map((box, index) => (
-            <DraggableBox key={index} position={new THREE.Vector3(box.x, -box.z, 2.5)} mouse={mouse} />
-        ))}
+        {previewWall && <Wall wall={previewWall}/>}
     </Plane>
 }

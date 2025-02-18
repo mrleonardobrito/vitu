@@ -2,8 +2,8 @@ import { Eye, EyeClosed, Pen } from "lucide-react";
 import { useStore } from "../store/useStore";
 
 export default function ToolView() {
-    const { eyeOpened, setEyeOpened, isDrawing, setDrawing } = useStore();
-
+    const { eyeOpened, setEyeOpened } = useStore();
+    
     return (
         <div style={{ position: "absolute", height: "100vh", width: "100vw" }}>
             <button
@@ -11,7 +11,7 @@ export default function ToolView() {
                     position: "relative",
                     top: 20,
                     left: 20,
-                    backgroundColor: isDrawing ? "red" : "#6E82FE",
+                    backgroundColor: "#6E82FE",
                     color: "white",
                     border: "none",
                     padding: "10px",
@@ -19,9 +19,8 @@ export default function ToolView() {
                     cursor: "pointer",
                     zIndex: 1
                 }}
-                onClick={() => setDrawing(!isDrawing)}
             >
-                <Pen /> {isDrawing ? "Parar Desenho" : "Desenhar"}
+                <Pen />
             </button>
 
             <button

@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import * as THREE from "three";
-import { Wall } from "../components/Wall";
+import type { Wall } from "../components/Wall";
 
 interface StoreState {
     hovered: boolean;
@@ -10,7 +10,7 @@ interface StoreState {
     setHovered: (value: boolean) => void;
     setEyeOpened: (value: boolean) => void;
     setDrawing: (value: boolean) => void;
-    addWall: (start: THREE.Vector3, end: THREE.Vector3) => void;
+    addWall: (wall: Wall) => void;
 }
 
 export const useStore = create<StoreState>((set) => ({
@@ -22,8 +22,8 @@ export const useStore = create<StoreState>((set) => ({
     setHovered: (value) => set({ hovered: value }),
     setEyeOpened: (value) => set({ eyeOpened: value }),
     setDrawing: (value) => set({ isDrawing: value }),   
-    addWall: (start, end) =>
+    addWall: (wall) =>
         set((state) => ({
-            walls: [...state.walls, { start, end, height: 3 }],
+            walls: [...state.walls, wall],
         })), 
 }));
